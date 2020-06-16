@@ -1,0 +1,6 @@
+mark_outdated:
+  js:
+    js/mark_outdated.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
