@@ -1,6 +1,5 @@
-mark_outdated:
+row-class:
   js:
-    js/mark_outdated.js: {}
+    js/row-class.js: {}
   dependencies:
-    - core/jquery
-    - core/drupalSettings
+    - core/drupal

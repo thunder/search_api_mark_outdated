@@ -2,19 +2,16 @@
 
 namespace Drupal\search_api_mark_outdated;
 
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Utility\Utility;
-use Drupal\views\ViewExecutable;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a class for reacting to search_api events.
  */
-class SearchApiManager implements ContainerInjectionInterface {
+class SearchApiManager {
 
   /**
    * The Entity Type Manager service.
@@ -41,16 +38,6 @@ class SearchApiManager implements ContainerInjectionInterface {
   public function __construct(EntityTypeManagerInterface $entity_type_manager, StateInterface $state) {
     $this->entityTypeManager = $entity_type_manager;
     $this->state = $state;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('state')
-    );
   }
 
   /**
@@ -116,7 +103,6 @@ class SearchApiManager implements ContainerInjectionInterface {
    */
   public function isOutdated(IndexInterface $index, $id) {
     $outdated = array_flip($this->state->get('thunder_search_api_outdated_' . $index->id(), []));
-
     return isset($outdated[$id]);
   }
 
@@ -140,27 +126,6 @@ class SearchApiManager implements ContainerInjectionInterface {
     }
 
     return Utility::createCombinedId($datasource_id, $entity->id() . ':' . $langcode);
-  }
-
-  /**
-   * Add library and data to view.
-   *
-   * @param \Drupal\views\ViewExecutable $view
-   *   The current view object.
-   */
-  public function preprocessView(ViewExecutable $view) {
-    $index = $view->query->getIndex();
-
-    foreach ($view->result as $row) {
-      if (isset($row->search_api_id) && $this->isOutdated($index, $row->search_api_id)) {
-        $data[] = $row->search_api_id;
-      }
-    }
-
-    if (!empty($data)) {
-      $view->element['#attached']['library'][] = 'search_api_mark_outdated/mark_outdated';
-      $view->element['#attached']['drupalSettings']['searchApiOutdatedContent'] = $data;
-    }
   }
 
 }
