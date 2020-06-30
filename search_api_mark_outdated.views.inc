@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provide views data for entity_browser.module.
+ * Provide views data for search_api_mark_outdated.module.
  */
 
 use Drupal\search_api\Entity\Index;

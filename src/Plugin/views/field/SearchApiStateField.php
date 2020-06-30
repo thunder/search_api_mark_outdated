@@ -13,7 +13,7 @@ use Drupal\views\ViewExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a bulk operation form element that works with entity browser.
+ * A field that indicates if a search result item might be outdated.
  *
  * @ViewsField("search_api_mark_outdated_state_field")
  */
@@ -47,7 +47,7 @@ class SearchApiStateField extends FieldPluginBase {
   }
 
   /**
-   * The search api mark outdated manager.
+   * Set the search api mark outdated manager.
    *
    * @param \Drupal\search_api_mark_outdated\SearchApiManager $searchApiManager
    *   The manager service.

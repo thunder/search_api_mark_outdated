@@ -1,5 +1,5 @@
 /**
- * @file mark_outdated.js
+ * @file row-class.js
  */
 
 (function (Drupal) {
@@ -7,7 +7,7 @@
   'use strict';
 
   /**
-   * Visually mark outdated rows and disable vbo checkbox
+   * Add a row class to a search api result item.
    *
    * @type {Object}
    */
