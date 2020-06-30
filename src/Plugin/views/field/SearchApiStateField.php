@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_mark_outdated\Plugin\views\field;
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\views\field\SearchApiFieldTrait;
@@ -47,6 +48,31 @@ class SearchApiStateField extends FieldPluginBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  protected function defineOptions() {
+    $options = parent::defineOptions();
+    $options['label']['default'] = '';
+    $options['add_row_class']['default'] = TRUE;
+
+    return $options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+    parent::buildOptionsForm($form, $form_state);
+
+    $form['add_row_class'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Add row class'),
+      '#default_value' => $this->options['add_row_class'],
+      '#description' => $this->t('Add a row class to indicate that the result item is outdated.'),
+    ];
+  }
+
+  /**
    * Set state service.
    *
    * @param \Drupal\Core\State\StateInterface $state
@@ -89,18 +115,23 @@ class SearchApiStateField extends FieldPluginBase {
    * {@inheritdoc}
    */
   public function render(ResultRow $row) {
-    return [
+    $element = [
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => [
         'data-is-outdated' => (int) $this->isOutdated($this->index, $row->search_api_id),
       ],
-      '#attached' => [
+    ];
+
+    if ($this->options['add_row_class']) {
+      $element['#attached'] = [
         'library' => [
           'search_api_mark_outdated/mark_outdated',
         ],
-      ],
-    ];
+      ];
+    }
+
+    return $element;
   }
 
 }
