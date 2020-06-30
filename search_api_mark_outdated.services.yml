@@ -1,0 +1,4 @@
+services:
+  search_api_mark_outdated.manager:
+    class: Drupal\search_api_mark_outdated\SearchApiManager
+    arguments: ['@entity_type.manager', '@state']

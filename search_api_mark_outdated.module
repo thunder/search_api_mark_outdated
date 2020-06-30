@@ -13,7 +13,6 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\search_api\datasource\ContentEntity;
-use Drupal\search_api_mark_outdated\SearchApiManager;
 
 /**
  * Implements hook_entity_update().
@@ -29,8 +28,7 @@ function search_api_mark_outdated_entity_update(EntityInterface $entity) {
     return;
   }
 
-  \Drupal::service('class_resolver')
-    ->getInstanceFromDefinition(SearchApiManager::class)
+  \Drupal::service('search_api_mark_outdated.manager')
     ->entityUpdate($indexes, $entity);
 }
 
@@ -38,7 +36,6 @@ function search_api_mark_outdated_entity_update(EntityInterface $entity) {
  * Implements function hook_search_api_items_indexed().
  */
 function search_api_mark_outdated_search_api_items_indexed(IndexInterface $index, array $item_ids) {
-  \Drupal::service('class_resolver')
-    ->getInstanceFromDefinition(SearchApiManager::class)
+  \Drupal::service('search_api_mark_outdated.manager')
     ->itemsIndexed($index, $item_ids);
 }

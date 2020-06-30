@@ -3,10 +3,9 @@
 namespace Drupal\search_api_mark_outdated\Plugin\views\field;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\State\StateInterface;
-use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\views\field\SearchApiFieldTrait;
 use Drupal\search_api\Plugin\views\query\SearchApiQuery;
+use Drupal\search_api_mark_outdated\SearchApiManager;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
@@ -23,11 +22,11 @@ class SearchApiStateField extends FieldPluginBase {
   use SearchApiFieldTrait;
 
   /**
-   * The state key value store.
+   * The search api mark outdated manager.
    *
-   * @var \Drupal\Core\State\StateInterface
+   * @var \Drupal\search_api_mark_outdated\SearchApiManager
    */
-  protected $state;
+  protected $searchApiManager;
 
   /**
    * The search index.
@@ -41,10 +40,20 @@ class SearchApiStateField extends FieldPluginBase {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $field = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    $field->setState($container->get('state'));
+    $field->setSearchApiManager($container->get('search_api_mark_outdated.manager'));
     $field->setEntityTypeManager($container->get('entity_type.manager'));
 
     return $field;
+  }
+
+  /**
+   * The search api mark outdated manager.
+   *
+   * @param \Drupal\search_api_mark_outdated\SearchApiManager $searchApiManager
+   *   The manager service.
+   */
+  protected function setSearchApiManager(SearchApiManager $searchApiManager) {
+    $this->searchApiManager = $searchApiManager;
   }
 
   /**
@@ -73,16 +82,6 @@ class SearchApiStateField extends FieldPluginBase {
   }
 
   /**
-   * Set state service.
-   *
-   * @param \Drupal\Core\State\StateInterface $state
-   *   The state service.
-   */
-  protected function setState(StateInterface $state) {
-    $this->state = $state;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
@@ -96,22 +95,6 @@ class SearchApiStateField extends FieldPluginBase {
   }
 
   /**
-   * Check if entity is outdated.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   Search API Index.
-   * @param string $id
-   *   Entity combined id.
-   *
-   * @return bool
-   *   Entity is outdated.
-   */
-  public function isOutdated(IndexInterface $index, $id) {
-    $outdated = array_flip($this->state->get('thunder_search_api_outdated_' . $index->id(), []));
-    return isset($outdated[$id]);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function render(ResultRow $row) {
@@ -119,14 +102,14 @@ class SearchApiStateField extends FieldPluginBase {
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => [
-        'data-is-outdated' => (int) $this->isOutdated($this->index, $row->search_api_id),
+        'data-is-outdated' => (int) $this->searchApiManager->isOutdated($this->index, $row->search_api_id),
       ],
     ];
 
     if ($this->options['add_row_class']) {
       $element['#attached'] = [
         'library' => [
-          'search_api_mark_outdated/mark_outdated',
+          'search_api_mark_outdated/row-class',
         ],
       ];
     }

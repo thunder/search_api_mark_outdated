@@ -2,18 +2,16 @@
 
 namespace Drupal\search_api_mark_outdated;
 
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Utility\Utility;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a class for reacting to search_api events.
  */
-class SearchApiManager implements ContainerInjectionInterface {
+class SearchApiManager {
 
   /**
    * The Entity Type Manager service.
@@ -40,16 +38,6 @@ class SearchApiManager implements ContainerInjectionInterface {
   public function __construct(EntityTypeManagerInterface $entity_type_manager, StateInterface $state) {
     $this->entityTypeManager = $entity_type_manager;
     $this->state = $state;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity_type.manager'),
-      $container->get('state')
-    );
   }
 
   /**
@@ -100,6 +88,22 @@ class SearchApiManager implements ContainerInjectionInterface {
 
     $ids = $this->state->get('thunder_search_api_outdated_' . $index->id(), []) + $ids;
     $this->state->set('thunder_search_api_outdated_' . $index->id(), $ids);
+  }
+
+  /**
+   * Check if entity is outdated.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   Search API Index.
+   * @param string $id
+   *   Entity combined id.
+   *
+   * @return bool
+   *   Entity is outdated.
+   */
+  public function isOutdated(IndexInterface $index, $id) {
+    $outdated = array_flip($this->state->get('thunder_search_api_outdated_' . $index->id(), []));
+    return isset($outdated[$id]);
   }
 
   /**
