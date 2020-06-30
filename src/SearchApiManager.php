@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Utility\Utility;
-use Drupal\views\ViewExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -104,23 +103,6 @@ class SearchApiManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Check if entity is outdated.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   Search API Index.
-   * @param string $id
-   *   Entity combined id.
-   *
-   * @return bool
-   *   Entity is outdated.
-   */
-  public function isOutdated(IndexInterface $index, $id) {
-    $outdated = array_flip($this->state->get('thunder_search_api_outdated_' . $index->id(), []));
-
-    return isset($outdated[$id]);
-  }
-
-  /**
    * Return search_api combinedId for given entity.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -140,27 +122,6 @@ class SearchApiManager implements ContainerInjectionInterface {
     }
 
     return Utility::createCombinedId($datasource_id, $entity->id() . ':' . $langcode);
-  }
-
-  /**
-   * Add library and data to view.
-   *
-   * @param \Drupal\views\ViewExecutable $view
-   *   The current view object.
-   */
-  public function preprocessView(ViewExecutable $view) {
-    $index = $view->query->getIndex();
-
-    foreach ($view->result as $row) {
-      if (isset($row->search_api_id) && $this->isOutdated($index, $row->search_api_id)) {
-        $data[] = $row->search_api_id;
-      }
-    }
-
-    if (!empty($data)) {
-      $view->element['#attached']['library'][] = 'search_api_mark_outdated/mark_outdated';
-      $view->element['#attached']['drupalSettings']['searchApiOutdatedContent'] = $data;
-    }
   }
 
 }

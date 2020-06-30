@@ -13,9 +13,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Plugin\search_api\datasource\ContentEntity;
-use Drupal\search_api\Plugin\views\query\SearchApiQuery;
-use Drupal\thunder_search_api\SearchApiManager;
-use Drupal\views\ViewExecutable;
+use Drupal\search_api_mark_outdated\SearchApiManager;
 
 /**
  * Implements hook_entity_update().
@@ -34,20 +32,6 @@ function search_api_mark_outdated_entity_update(EntityInterface $entity) {
   \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(SearchApiManager::class)
     ->entityUpdate($indexes, $entity);
-}
-
-/**
- * Implements hook_views_pre_render().
- */
-function search_api_mark_outdated_preprocess_views_view(&$variables) {
-  /* @var Drupal\views\ViewExecutable $view */
-  $view = $variables['view'];
-  if (!$view->result || !$view->query instanceof SearchApiQuery) {
-    return;
-  }
-  Drupal::service('class_resolver')
-    ->getInstanceFromDefinition(SearchApiManager::class)
-    ->preprocessView($view);
 }
 
 /**
