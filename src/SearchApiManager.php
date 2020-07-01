@@ -71,9 +71,9 @@ class SearchApiManager {
    * @see hook_search_api_items_indexed()
    */
   public function itemsIndexed(IndexInterface $index, array $item_ids) {
-    $outdated_ids = $this->state->get('search_api_outdated_' . $index->id(), []);
+    $outdated_ids = $this->state->get('search_api_mark_outdated_' . $index->id(), []);
     $outdated_ids = array_diff($outdated_ids, $item_ids);
-    $this->state->set('search_api_outdated_' . $index->id(), $outdated_ids);
+    $this->state->set('search_api_mark_outdated_' . $index->id(), $outdated_ids);
   }
 
   /**
@@ -86,8 +86,8 @@ class SearchApiManager {
    */
   public function setOutdated(IndexInterface $index, array $ids) {
 
-    $ids = $this->state->get('search_api_outdated_' . $index->id(), []) + $ids;
-    $this->state->set('search_api_outdated_' . $index->id(), $ids);
+    $ids = $this->state->get('search_api_mark_outdated_' . $index->id(), []) + $ids;
+    $this->state->set('search_api_mark_outdated_' . $index->id(), $ids);
   }
 
   /**
@@ -102,7 +102,7 @@ class SearchApiManager {
    *   Entity is outdated.
    */
   public function isOutdated(IndexInterface $index, $id) {
-    $outdated = array_flip($this->state->get('search_api_outdated_' . $index->id(), []));
+    $outdated = array_flip($this->state->get('search_api_mark_outdated_' . $index->id(), []));
     return isset($outdated[$id]);
   }
 
