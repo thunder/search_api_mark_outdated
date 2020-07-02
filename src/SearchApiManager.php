@@ -119,7 +119,7 @@ class SearchApiManager {
    * @return string
    *   The combinedId.
    */
-  public function createCombinedId(EntityInterface $entity, $langcode = NULL) {
+  protected function createCombinedId(EntityInterface $entity, $langcode = NULL) {
     $datasource_id = 'entity:' . $entity->getEntityTypeId();
     if (!$langcode) {
       $langcode = $entity->language()->getId();

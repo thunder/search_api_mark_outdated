@@ -3,13 +3,10 @@
 namespace Drupal\search_api_mark_outdated\Plugin\views\field;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\search_api\Plugin\views\field\SearchApiFieldTrait;
-use Drupal\search_api\Plugin\views\query\SearchApiQuery;
+use Drupal\search_api\Plugin\views\SearchApiHandlerTrait;
 use Drupal\search_api_mark_outdated\SearchApiManager;
-use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
-use Drupal\views\ViewExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SearchApiStateField extends FieldPluginBase {
 
-  use SearchApiFieldTrait;
+  use SearchApiHandlerTrait;
 
   /**
    * The search api mark outdated manager.
@@ -41,7 +38,6 @@ class SearchApiStateField extends FieldPluginBase {
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $field = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $field->setSearchApiManager($container->get('search_api_mark_outdated.manager'));
-    $field->setEntityTypeManager($container->get('entity_type.manager'));
 
     return $field;
   }
@@ -84,25 +80,12 @@ class SearchApiStateField extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
-    parent::init($view, $display, $options);
-    $base_table = $view->storage->get('base_table');
-    $this->index = SearchApiQuery::getIndexFromTable($base_table, $this->getEntityTypeManager());
-    if (!$this->index) {
-      $view_label = $view->storage->label();
-      throw new \InvalidArgumentException("View '$view_label' is not based on Search API but tries to use its row plugin.");
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function render(ResultRow $row) {
     $element = [
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => [
-        'data-is-outdated' => (int) $this->searchApiManager->isOutdated($this->index, $row->search_api_id),
+        'data-is-outdated' => (int) $this->searchApiManager->isOutdated($this->getIndex(), $row->search_api_id),
       ],
     ];
 
