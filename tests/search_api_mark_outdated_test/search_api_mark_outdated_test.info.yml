@@ -1,0 +1,8 @@
+name: 'Search API Mark Outdated Test'
+type: module
+package: Testing
+dependencies:
+  - search_api:search_api
+  - search_api:search_api_test_db
+  - search_api_mark_outdated:search_api_mark_outdated
+  - drupal:views
