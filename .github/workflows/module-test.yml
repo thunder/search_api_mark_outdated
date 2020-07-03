@@ -33,6 +33,7 @@ jobs:
       with:
         coverage: none
         php-version: ${{ matrix.PHP }}
+        extensions: gd,pdo_sqlite
 
     - name: Cache composer dependencies
       uses: actions/cache@v1
