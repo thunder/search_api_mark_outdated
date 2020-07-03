@@ -10,9 +10,6 @@ on:
 
 env:
    DRUPAL_TESTING_TEST_CODING_STYLES: false
-   DRUPAL_TESTING_DATABASE_USER: root
-   DRUPAL_TESTING_DATABASE_PASSWORD: root
-   DRUPAL_TESTING_DATABASE_ENGINE: mysql
 
 jobs:
   build:
@@ -32,32 +29,17 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-
     - uses: shivammathur/setup-php@v2
       with:
         coverage: none
         php-version: ${{ matrix.PHP }}
-
-    - name: Start MySql service
-      run: sudo /etc/init.d/mysql start
 
     - name: Cache composer dependencies
       uses: actions/cache@v1
       with:
         path: ~/.composer/cache
         key: ${{ runner.os }}-composer-cache-${{ hashFiles('**/composer.json') }}
-        restore-keys: ${{ runner.os }}-composer-cache-
-
-    - name: Cache NPM dependencies
-      id: npm-cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-npm-cache
-        restore-keys: ${{ runner.os }}-npm-cache
+        restore-keys: ${{ runner.os }}-composer-cache
 
     - name: Get build environment
       run: composer global require thunder/drupal-testing
