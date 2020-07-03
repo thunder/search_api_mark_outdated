@@ -77,7 +77,7 @@ class ViewsTest extends SearchApiBrowserTestBase {
     // Our item is still in the result set, that's why we mark it outdated.
     $this->drupalGet('search-api-test-mark-outdated', ['query' => ['search_api_fulltext' => 'baz']]);
 
-    $this->assertSession()->elementExists('xpath', "//table/tbody/tr[3]/td[2]/div[@data-is-outdated=1]");
+    $this->assertSession()->elementExists('xpath', "//div[contains(@class, 'table-outdated')]/table/tbody/tr[3]/td[2]/div[@data-is-outdated=1]");
   }
 
 }

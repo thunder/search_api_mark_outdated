@@ -286,6 +286,7 @@ display:
       filter_groups:
         operator: AND
         groups: {  }
+      css_class: table-outdated
     cache_metadata:
       max-age: -1
       contexts:
