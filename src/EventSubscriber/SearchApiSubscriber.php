@@ -43,7 +43,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    $events[SearchApiEvents::ITEMS_INDEXED][] = ['onItemsIndexed', 5];
+    $events[SearchApiEvents::ITEMS_INDEXED][] = ['onItemsIndexed'];
     return $events;
   }
 
