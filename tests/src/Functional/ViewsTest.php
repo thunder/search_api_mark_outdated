@@ -4,7 +4,6 @@ namespace Drupal\Tests\search_api_mark_outdated\Functional;
 
 use Drupal\entity_test\Entity\EntityTestMulRevChanged;
 use Drupal\search_api\Entity\Index;
-use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\search_api\Functional\ExampleContentTrait;
 use Drupal\Tests\search_api\Functional\SearchApiBrowserTestBase;
 
@@ -20,9 +19,8 @@ class ViewsTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'search_api_mark_outdated_test',
-    'views_ui',
   ];
 
   /**
@@ -33,16 +31,7 @@ class ViewsTest extends SearchApiBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected $adminUserPermissions = [
-    'administer search_api',
-    'access administration pages',
-    'administer views',
-  ];
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     \Drupal::getContainer()
@@ -50,13 +39,6 @@ class ViewsTest extends SearchApiBrowserTestBase {
       ->addItemsAll(Index::load($this->indexId));
     $this->insertExampleContent();
     $this->indexItems($this->indexId);
-
-    // Do not use a batch for tracking the initial items after creating an
-    // index when running the tests via the GUI. Otherwise, it seems Drupal's
-    // Batch API gets confused and the test fails.
-    if (!Utility::isRunningInCli()) {
-      \Drupal::state()->set('search_api_use_tracking_batch', FALSE);
-    }
   }
 
   /**
